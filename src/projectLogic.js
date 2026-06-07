@@ -1,4 +1,5 @@
-import { AppState } from './state.js';
+import { AppState } from './state.js'; 
+import { renderProjectList } from './render.js'
 
 export class ProjectMaker {
     constructor(name, note = "") {
@@ -8,46 +9,55 @@ export class ProjectMaker {
 }
 
 export function renderProjectForm() {
-
-    const ProjectDialog = document.createElement('dialog');
-    ProjectDialog.innerHTML =
-    `
-    <form id="ProjectForm">
-        <div><label for="projectName">Name:</label><input id="projectName" type="text" required></div>
-        <div><label for="ProjectNote">Notes</label><input type="text" id="ProjectNote" placeholder="(Optional)"></div>
-        <button type="button" id="projectcloseBTN">Close</button>
-        <button type="reset"  id="projectResetBTN">Reset</button>
-        <button type="submit" id="projectSubmitBTN">Submit</button>
-    </form>
-    `
-    document.body.appendChild(ProjectDialog);
-
-    ProjectDialog.showModal();
-
-    const closeBTN = document.getElementById("projectcloseBTN");
-    closeBTN.addEventListener("click", () => {
-        ProjectDialog.close();
-        ProjectDialog.remove();
-    })
+    const projectDialog = document.createElement('dialog');
     
-    const ProjectForm = ProjectDialog.querySelector("#ProjectForm");    
-    ProjectForm.addEventListener("submit", (e) => {
+    projectDialog.innerHTML = `
+    <form id="ProjectForm">
+        <h3 style="margin-bottom: 2rem; color: var(--dominant-color);">New Project</h3>
+        
+        <div class="projectformElement" style="margin-bottom: 1.5rem;">
+            <label for="new-project-name">Name</label>
+            <input id="new-project-name" type="text" placeholder="e.g. Work, Gym, Travel" required>
+        </div>
+
+        <div class="projectformElement" style="margin-bottom: 1.5rem;">
+            <label for="new-project-note">Note</label>
+            <textarea id="new-project-note" placeholder="What is this project about?"></textarea>
+        </div>
+
+        <div class="projectformElement">
+            <button type="button" id="closeProjBTN">Close</button>
+            <button type="submit">Create Project</button>
+        </div>
+    </form>
+    `;
+
+    document.body.appendChild(projectDialog);
+    projectDialog.showModal();
+
+    // Close logic
+    const closeBtn = projectDialog.querySelector("#closeProjBTN");
+    closeBtn.addEventListener("click", () => {
+        projectDialog.close();
+        projectDialog.remove();
+    });
+
+    // Submit logic
+    const form = projectDialog.querySelector("#ProjectForm");
+    form.addEventListener("submit", (e) => {
         e.preventDefault();
         
-        let name = document.getElementById("projectName").value;
-        let note = document.getElementById("ProjectNote").value;
-        
-        const newProject = new ProjectMaker(name, note);
-        
-        // --- 2. THE NEW STATE METHOD ---
-        AppState.projects.push(newProject); // Add the new project to the array in state
-        AppState.saveData();                // Tell the state to save itself to localStorage
-        renderProjectList();                // Update the UI instantly
-        // -------------------------------
-        
-        ProjectDialog.close();
-        ProjectDialog.remove();
-    })
-}
+        //Scope the search safely inside the form we just submitted
+        const name = form.querySelector("#new-project-name").value;
+        const note = form.querySelector("#new-project-note").value;
 
-// (Your renderProjectList function should also be in this file as we updated it earlier!)
+        // Save logic
+        AppState.projects.push({ name, note });
+        AppState.saveData();
+        
+        renderProjectList();
+
+        projectDialog.close();
+        projectDialog.remove();
+    });
+}

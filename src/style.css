@@ -29,10 +29,10 @@ body {
     flex-direction: column;
 }
 
-/* --- 2. Main App Layout (Grid) --- *//* --- 2. Main App Layout (3-Column Grid) --- */
+/* --- 2. Main App Layout (3-Column Grid) --- */
 main {
     display: grid;
-    /* 260px Left Sidebar | Flexible Middle (1fr) | 260px Right Sidebar */
+    /* 200px Left Sidebar | Flexible Middle (1fr) | 360px Right Sidebar */
     grid-template-columns: 200px 1fr 360px; 
     height: 100vh;
 }
@@ -56,17 +56,13 @@ main {
 }
 
 #motivation {
-    background-color: var(--sidebar-bg); /* Match the left sidebar */
+    background-color: var(--sidebar-bg); 
     border-left: 1px solid var(--border-color);
     padding: 2rem 1.5rem;
-    
-    /* Use Flexbox to perfectly center the quote vertically and horizontally */
     display: flex; 
     flex-direction: column;
     justify-content: center; 
     align-items: center;
-    
-    /* Typography formatting for a sidebar */
     text-align: center;
     font-size: 1.15rem;
     line-height: 1.6;
@@ -89,7 +85,7 @@ button {
 }
 
 button:hover {
-    background-color: var(--accent-color); /* Beautiful transition from Blue to Teal */
+    background-color: var(--accent-color); 
     transform: translateY(-2px);
     box-shadow: 0 6px 12px rgba(20, 133, 130, 0.3);
 }
@@ -108,7 +104,7 @@ button:hover {
 .delete-btn:hover {
     background-color: var(--accent-color);
     color: white;
-    transform: translateY(0); /* Prevent jumping */
+    transform: translateY(0); 
 }
 
 /* --- 4. The Cards (Projects & Todos) --- */
@@ -117,24 +113,23 @@ button:hover {
     padding: 1.5rem;
     border-radius: 10px;
     box-shadow: var(--card-shadow);
-    border: 1px solid var(--sidebar-bg); /* Invisible border for layout stability */
+    border: 1px solid var(--sidebar-bg); 
     transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
 }
 
-/* Specific Project Card Interactions */
 .project-card {
     cursor: pointer; 
 }
 
 .project-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 16px rgba(27, 90, 225, 0.15); /* Blue tinted hover shadow */
+    box-shadow: 0 8px 16px rgba(27, 90, 225, 0.15); 
     border-color: var(--dominant-color);
 }
 
 .projectName, .todo-title {
     margin-bottom: 0.5rem;
-    color: var(--accent-color); /* Deep Teal for headings */
+    color: var(--accent-color); 
     font-size: 1.25rem;
 }
 
@@ -170,7 +165,7 @@ button:hover {
 
 /* --- 6. Sticky Headers & Buttons --- */
 
-/* Stick the Project Header to the top */
+/* Project List Sticky Elements */
 #projectList h2 {
     position: sticky;
     top: 0;
@@ -179,7 +174,6 @@ button:hover {
     z-index: 10;
 }
 
-/* Stick the Project Add Button to the bottom */
 #AddProjectbtn {
     position: sticky;
     bottom: 0;
@@ -187,7 +181,7 @@ button:hover {
     box-shadow: 0 -10px 15px var(--sidebar-bg);
 }
 
-/* --- The Upgraded Sticky Header --- */
+/* To-Do List Sticky Elements */
 #todoList h2 {
     position: sticky;
     top: 0;
@@ -206,7 +200,6 @@ button:hover {
     font-weight: 600;
 }
 
-/* --- Styling the Dynamic Project Name --- */
 #ProjectName {
     color: var(--dominant-color); 
     background-color: var(--sidebar-bg); 
@@ -218,7 +211,6 @@ button:hover {
     border: 1px solid rgba(27, 90, 225, 0.1);
 }
 
-/* Stick the To-Do Add Button to the bottom right */
 #AddTodoBTN {
     position: sticky;
     bottom: 0;
@@ -229,14 +221,14 @@ button:hover {
 
 /* --- 7. Modal Dialogs (Forms) --- */
 
-/* The dark, blurry overlay behind the popup */
+/* Backdrop Overlay */
 dialog::backdrop {
     background: rgba(20, 133, 130, 0.4); 
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
 }
 
-/* The Main Popup Box (Dialed back to 500px) */
+/* Main Dialog Box */
 dialog {
     margin: auto; 
     padding: 1.5rem; 
@@ -245,16 +237,20 @@ dialog {
     background: var(--card-bg);
     box-shadow: 0 10px 30px rgba(27, 90, 225, 0.25);
     width: 90%;
-    max-width: 500px; /* Pulled back from the massive 650px */
+    max-width: 500px; 
     color: var(--text-main);
 }
 
-/* Base Form Layout */
+/* Base Form Structuring */
 form, .todo-fieldset {
     display: flex;
     flex-direction: column;
-    gap: 0.8rem; 
+    gap: 1.2rem; 
     border: none;
+}
+
+#ProjectForm {
+    padding: 1rem 0; 
 }
 
 /* Fieldsets & Legends */
@@ -272,27 +268,29 @@ legend {
     padding: 0 0.5rem;
 }
 
-/* --- Left-Aligned Labels & Inputs --- */
-.todoformElement, #ProjectForm div {
+/* --- Shared Form Elements (Left-Aligned Labels) --- */
+.todoformElement, 
+.projectformElement {
     display: flex;
     flex-direction: row; 
     align-items: center; 
     gap: 1rem;
 }
 
-/* Force standard labels to be the exact same width */
-.todoformElement > label {
-    flex: 0 0 100px; /* Slight bump so the text fits comfortably */
+.todoformElement > label, 
+.projectformElement > label {
+    flex: 0 0 100px; 
     text-align: right; 
     font-size: 0.95rem;
     font-weight: 600;
     color: var(--text-muted);
 }
 
-/* Tell input boxes to stretch */
 .todoformElement > input[type="text"], 
 .todoformElement > input[type="date"], 
-.todoformElement > textarea {
+.todoformElement > textarea,
+.projectformElement > input[type="text"], 
+.projectformElement > textarea {
     flex: 1;
     padding: 0.6rem 0.8rem;
     border: 2px solid var(--border-color);
@@ -303,16 +301,27 @@ legend {
     color: var(--text-main);
 }
 
-/* Fix for the Description Textarea */
-.todoformElement:has(textarea) {
+/* Textarea Layout Adjustments */
+.todoformElement:has(textarea),
+.projectformElement:has(textarea) {
     align-items: flex-start;
 }
 
-.todoformElement:has(textarea) > label {
+.todoformElement:has(textarea) > label,
+.projectformElement:has(textarea) > label {
     padding-top: 0.6rem;
 }
 
-/* The "Glowing" Focus State */
+textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+#ProjectForm textarea {
+    min-height: 120px; 
+}
+
+/* Input Focus Glow */
 input[type="text"]:focus, 
 input[type="date"]:focus, 
 textarea:focus {
@@ -322,16 +331,11 @@ textarea:focus {
     background-color: white;
 }
 
-textarea {
-    resize: vertical;
-    min-height: 80px;
-}
-
-/* --- Project Scroll Box (1 Option Per Row) --- */
+/* --- Checkboxes & Radios (Projects & Urgency) --- */
 .project-options-container {
     display: flex;
-    flex-direction: column; /* Back to a vertical stack! */
-    gap: 0.4rem; /* Neatly spaces out the rows */
+    flex-direction: column; 
+    gap: 0.4rem; 
     max-height: 140px; 
     overflow-y: auto;
     padding-right: 0.5rem; 
@@ -340,25 +344,23 @@ textarea {
     scrollbar-color: var(--border-color) transparent;
 }
 
-/* The styling for the individual checkbox rows */
 .project-options-container div {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     margin-top: 0 !important; 
     background: #fafcfc;
-    padding: 0.5rem; /* Gives each row a nice click area */
+    padding: 0.5rem; 
     border-radius: 6px;
     border: 1px solid rgba(168, 209, 208, 0.4);
 }
 
-/* Customizing Radio & Checkbox Spacing */
 input[type="radio"], input[type="checkbox"] {
     accent-color: var(--dominant-color); 
     width: 1.1rem;
     height: 1.1rem;
     cursor: pointer;
-    flex-shrink: 0; /* Stops the checkbox from squishing if the label gets long */
+    flex-shrink: 0; 
 }
 
 fieldset label {
@@ -368,21 +370,21 @@ fieldset label {
     font-weight: 600;
 }
 
-/* Keep Urgency Radio Buttons inline */
 .todoformElement fieldset > div {
     display: inline-flex;
     margin-right: 1rem;
     margin-top: 0.5rem;
 }
 
-/* --- Form Buttons Array --- */
-#ProjectForm, .todoformElement:last-child {
+/* --- Form Buttons Layout --- */
+.todoformElement:last-child, 
+.projectformElement:last-child {
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
-    flex-wrap: wrap;
     gap: 1rem;
     margin-top: 1rem;
+    width: 100%; 
 }
 
 button[type="button"], button[type="reset"] {
