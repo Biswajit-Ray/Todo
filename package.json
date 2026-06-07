@@ -8,7 +8,11 @@
     "setup": "npm install --save-dev html-webpack-plugin && npm install --save-dev style-loader css-loader && npm install --save-dev html-loader && npm install --save-dev webpack-dev-server",
     "build": "webpack --config webpack.prod.js",
     "dev": "webpack serve --config webpack.dev.js",
-    "deploy": "git subtree push --prefix dist origin gh-pages"
+    "deploy": "git subtree push --prefix dist origin gh-pages",
+    "init-deploy": "git branch gh-pages",
+    "run-deploy": "git checkout gh-pages && git merge main --no-edit",
+    "bundle": "npx webpack",
+    "finalize": "git add dist -f && git commit -m 'Deployment commit' && git subtree push --prefix dist origin gh-pages && git checkout main"
   },
   "repository": {
     "type": "git",
