@@ -80,11 +80,14 @@ function todocardMaker(title, dueDate, priority, description) {
 }
 
 
-export function renderTodoList() { 
+export function renderTodoList() {  
+    
     const currentCategory = AppState.currentCategory;
 
+    const displayCategory = currentCategory.charAt(0).toUpperCase() + currentCategory.slice(1);
+
     const projectNameSpan = document.getElementById("ProjectName");
-    if (projectNameSpan) projectNameSpan.textContent = currentCategory;
+    if (projectNameSpan) projectNameSpan.textContent = displayCategory;
 
     const allTodos = AppState.todos;
     

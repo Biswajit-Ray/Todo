@@ -1,5 +1,5 @@
 import { AppState } from './state.js';
-import {renderTodoList} from "./render.js";
+import { renderTodoList } from "./render.js";
 
 export function hello() { 
     console.log("Hello!"); 
@@ -39,7 +39,7 @@ export function renderTODOForm() {
     TODODialog.innerHTML = `
     <form id="todo-form">
         <fieldset class="todo-fieldset">
-            <legend>Please enter your todo's details</legend>
+            <legend>Please enter your todo's details:</legend>
             <div class="todoformElement">
                 <label for="todo-title">Title</label><input id="todo-title" type="text" required>
             </div>
@@ -51,8 +51,8 @@ export function renderTODOForm() {
                     <legend>Select urgency of your Task</legend>
                     <div><input type="radio" id="extreme" name="urgency" value="10000" required><label for="extreme">Extreme💀</label></div>
                     <div><input type="radio" id="high" name="urgency" value="8"><label for="high">High😫</label></div>
-                    <div><input type="radio" id="medium" name="urgency" value="4"><label for="medium">medium👍</label></div>
-                    <div><input type="radio" id="low" name="urgency" value="2"><label for="low">low😎</label></div>
+                    <div><input type="radio" id="medium" name="urgency" value="4"><label for="medium">Medium👍</label></div>
+                    <div><input type="radio" id="low" name="urgency" value="2"><label for="low">Low😎</label></div>
                 </fieldset>
             </div>
             <div class="todoformElement">
@@ -61,7 +61,7 @@ export function renderTODOForm() {
             <div class="todoformElement">
                 <fieldset id="formProjectSelections">
                     <legend>Assign to Projects</legend>
-                </fieldset>
+                    </fieldset>
             </div>
             <div class="todoformElement">
                 <button type="button" id="closeBTN">Close</button>
@@ -72,19 +72,44 @@ export function renderTODOForm() {
     </form>
     `;
 
+    // 1. Get the fieldset we just created in the HTML above
     const Selections = TODODialog.querySelector("#formProjectSelections");
 
-    // 1. READ PROJECTS FROM STATE
-    const listArray = AppState.projects; 
-    console.log("Current projects in state:", listArray);
-    
-    for (let item of listArray) {
-        const div = document.createElement("div");
-        div.innerHTML = `<input type="checkbox" id="check-${item.name}" value="${item.name}">
-                         <label for="check-${item.name}">${item.name}</label>`;
-                         Selections.appendChild(div);
+    // 2. Create the scrollable wrapper class for our CSS
+    const optionsWrapper = document.createElement("div");
+    optionsWrapper.classList.add("project-options-container");
+
+    // 3. Gather your projects (We include "all" as the default option)
+    const allOptions = ["all", ...AppState.projects.map(project => project.name)];
+
+    // 4. Loop through and create the checkboxes
+    for (let projectName of allOptions) {
+        const optionDiv = document.createElement("div");
+
+        const checkboxBtn = document.createElement("input");
+        checkboxBtn.type = "checkbox"; 
+        checkboxBtn.name = "projectAssignment";
+        checkboxBtn.value = projectName;
+        // Generate a safe ID without spaces
+        checkboxBtn.id = `form-proj-${projectName.replace(/\s+/g, '-')}`; 
+        
+        // Check "all" by default
+        if (projectName === "all") checkboxBtn.checked = true;
+
+        const optionLabel = document.createElement("label");
+        optionLabel.htmlFor = checkboxBtn.id;
+        optionLabel.textContent = projectName === "all" ? "All Tasks 🌍" : projectName;
+
+        // Append inputs to the mini-container
+        optionDiv.append(checkboxBtn, optionLabel);
+        
+        // Append the mini-container to the WRAPPER (Not the fieldset directly!)
+        optionsWrapper.appendChild(optionDiv);
     }
-    
+
+    // 5. Append the fully loaded wrapper into the fieldset
+    Selections.appendChild(optionsWrapper);
+
     document.body.appendChild(TODODialog);
     TODODialog.showModal();
 
@@ -102,6 +127,7 @@ export function renderTODOForm() {
         const dueDate = TODODialog.querySelector("#dueDate").value;
         const description = TODODialog.querySelector("#description").value;
         
+        // This continues to work perfectly since we kept input[type="checkbox"]
         const selectedProjectsArray = Array.from(
             TODODialog.querySelectorAll('input[type="checkbox"]:checked')
         ).map(cb => cb.value);
@@ -113,10 +139,10 @@ export function renderTODOForm() {
 
         const newTODO = new TodoMaker(title, calculatedPriority, dueDate, description, selectedProjectsArray);
         
-        // 2. SAVE TO STATE & RE-RENDER
-        AppState.todos.push(newTODO); // Add to state array
-        AppState.saveData();          // Save to localStorage
-        renderTodoList();             // Automatically update the UI
+        // SAVE TO STATE & RE-RENDER
+        AppState.todos.push(newTODO); 
+        AppState.saveData();          
+        renderTodoList();             
         
         TODODialog.close();
         TODODialog.remove();
