@@ -1,26 +1,20 @@
-
+import { AppState } from './state.js';
+import {renderTodoList} from "./render.js";
 
 export function hello() { 
     console.log("Hello!"); 
 }
 
-
 export class TodoMaker {
-    
-    constructor(title, priority, dueDate, description, projectArray = [], parentProject="Ian") {
+    // Added a default value to parentProject so it doesn't break if left empty
+    constructor(title, priority, dueDate, description, projectArray = [], parentProject = "Ian") {
         this.title = title;
         this.priority = priority;
         this.dueDate = dueDate;
         this.description = description;
         this.descendent = [...new Set(["all", parentProject, ...projectArray])]; 
-        this.checklist = false;
-    }
-
-    checked() {
-        this.checklist = true;
     }
 }
-
 
 export function getDaysDifference(dueDate) {
     const date1 = new Date(dueDate);
@@ -65,9 +59,9 @@ export function renderTODOForm() {
                 <label for="description">Description</label><textarea placeholder="I will fail the exams if it doesn't get done." id="description"></textarea>
             </div>
             <div class="todoformElement">
-                <select name="projectList" id="projectList" multiple>
-
-                </select>
+                <fieldset id="formProjectSelections">
+                    <legend>Assign to Projects</legend>
+                </fieldset>
             </div>
             <div class="todoformElement">
                 <button type="button" id="closeBTN">Close</button>
@@ -78,21 +72,21 @@ export function renderTODOForm() {
     </form>
     `;
 
-    const Selections= TODODialog.querySelector("#projectList");
+    const Selections = TODODialog.querySelector("#formProjectSelections");
 
-    const listString= localStorage.getItem("listOfProjects");
-    const listArray= JSON.parse(listString);
-    console.log(listArray);
+    // 1. READ PROJECTS FROM STATE
+    const listArray = AppState.projects; 
+    console.log("Current projects in state:", listArray);
+    
     for (let item of listArray) {
         const div = document.createElement("div");
-        div.innerHTML = `<input type="checkbox" id="${item}" value="${item}">
-                     <label for="${item}">${item}</label>`;
-        Selections.appendChild(div);
+        div.innerHTML = `<input type="checkbox" id="check-${item.name}" value="${item.name}">
+                         <label for="check-${item.name}">${item.name}</label>`;
+                         Selections.appendChild(div);
     }
     
     document.body.appendChild(TODODialog);
     TODODialog.showModal();
-
 
     const closeBTN = TODODialog.querySelector("#closeBTN");
     closeBTN.addEventListener("click", () => {
@@ -100,35 +94,31 @@ export function renderTODOForm() {
         TODODialog.remove();
     });
     
-    
     const TODOForm = TODODialog.querySelector("#todo-form");    
     TODOForm.addEventListener("submit", (e) => {
         e.preventDefault();
         
-        
         const title = TODODialog.querySelector("#todo-title").value;
         const dueDate = TODODialog.querySelector("#dueDate").value;
         const description = TODODialog.querySelector("#description").value;
-        const projectDropdown = TODODialog.querySelector("#projectList");
+        
         const selectedProjectsArray = Array.from(
-            TODODialog.querySelectorAll(
-                'input[type="checkbox"]:checked')).map(
-                    cb => cb.value);
+            TODODialog.querySelectorAll('input[type="checkbox"]:checked')
+        ).map(cb => cb.value);
 
         const urgency = Number(TODODialog.querySelector('input[name="urgency"]:checked').value);
     
         const daysLeft = getDaysDifference(dueDate);
         const calculatedPriority = priorityCalculator(daysLeft, urgency);
 
-       
-        const projectArray = selectedProjectsArray; 
-        const newTODO = new TodoMaker(title, calculatedPriority, dueDate, description, projectArray);
+        const newTODO = new TodoMaker(title, calculatedPriority, dueDate, description, selectedProjectsArray);
         
-        localStorage.setItem(title, JSON.stringify(newTODO));
+        // 2. SAVE TO STATE & RE-RENDER
+        AppState.todos.push(newTODO); // Add to state array
+        AppState.saveData();          // Save to localStorage
+        renderTodoList();             // Automatically update the UI
         
         TODODialog.close();
         TODODialog.remove();
     });
 }
-
-export const defaultList = [];

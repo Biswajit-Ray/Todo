@@ -1,0 +1,41 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    height: 100vh;
+    width: 100vw;
+    display: grid;
+    align-items: center;
+}
+
+main{
+    width: 75vw;
+    display: flex;
+    justify-self: center;
+    align-items: center;
+    background-color: blueviolet;
+}
+
+main>section{
+    height: 100%
+}
+
+#motivation {
+    background-color: aqua;
+    height: 30vw;
+    aspect-ratio: 1/2;
+    flex-grow: 1;
+}
+
+#todoList{
+    background-color: bisque;
+    flex-grow: 3;  
+}
+
+#projectList{
+    background-color: brown;
+    flex-grow: 2;
+}

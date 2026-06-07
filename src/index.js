@@ -1,29 +1,15 @@
-console.log("index.js working nice and smooth");
-import { renderProjectForm } from "./ProjectLogic.js";
-import { renderTODOForm } from "./TodoLogic.js";
+import { AppState } from './state.js';
+import { renderProjectList, renderTodoList } from './render.js'; 
+import { initializeEventListeners } from './EventListener.js';
 
-const newProjectBTN= document.getElementById('AddProjectbtn');
-newProjectBTN.addEventListener("click", (e)=>{
+import { renderMotivation } from './motivationLogic.js';
 
-    renderProjectForm();
-});
+// --- Boot Sequence ---
+AppState.loadData();
 
-const newTODObtn= document.getElementById('AddTODObtn');
-newTODObtn.addEventListener('click', (e)=>{
-    renderTODOForm();
-})
+// Render the UI
+renderMotivation();
+renderProjectList();
+renderTodoList(); 
 
-const names = [
-  "Alice",
-  "Bob",
-  "Charlie",
-  "Diana",
-  "Ethan",
-  "Fiona",
-  "George",
-  "Hannah",
-  "Ian",
-  "Julia"
-];
-
-if(!localStorage.getItem("listOfProjects")) localStorage.setItem("listOfProjects", JSON.stringify(names))
+initializeEventListeners();
