@@ -6,12 +6,13 @@ export function hello() {
 }
 
 export class TodoMaker {
-    // Added a default value to parentProject so it doesn't break if left empty
-    constructor(title, priority, dueDate, description, projectArray = [],) {
+
+    constructor(title, priority, dueDate, description, projectArray = [], urgency = 4) {
         this.title = title;
         this.priority = priority;
         this.dueDate = dueDate;
         this.description = description;
+        this.urgency = urgency; // Now this works
         this.descendent = [...new Set(["all", ...projectArray])]; 
     }
 }
@@ -34,7 +35,8 @@ export function priorityCalculator(days, urgency) {
     return Math.floor((urgency / (safeDays * safeDays)) * 1000);
 }
 
-export function renderTODOForm() {
+// 1. Accept the optional taskToEdit parameter
+export function renderTODOForm(taskToEdit = null) {
     const TODODialog = document.createElement('dialog');
     TODODialog.innerHTML = `
     <form id="todo-form">
@@ -61,7 +63,7 @@ export function renderTODOForm() {
             <div class="todoformElement">
                 <fieldset id="formProjectSelections">
                     <legend>Assign to Projects</legend>
-                    </fieldset>
+                </fieldset>
             </div>
             <div class="todoformElement">
                 <button type="button" id="closeBTN">Close</button>
@@ -72,17 +74,12 @@ export function renderTODOForm() {
     </form>
     `;
 
-    // 1. Get the fieldset we just created in the HTML above
     const Selections = TODODialog.querySelector("#formProjectSelections");
-
-    // 2. Create the scrollable wrapper class for our CSS
     const optionsWrapper = document.createElement("div");
     optionsWrapper.classList.add("project-options-container");
 
-    // 3. Gather your projects (We include "all" as the default option)
     const allOptions = AppState.projects.map(project => project.name);
 
-    // 4. Loop through and create the checkboxes
     for (let projectName of allOptions) {
         const optionDiv = document.createElement("div");
 
@@ -90,25 +87,42 @@ export function renderTODOForm() {
         checkboxBtn.type = "checkbox"; 
         checkboxBtn.name = "projectAssignment";
         checkboxBtn.value = projectName;
-        
-        // Generate a safe ID without spaces
         checkboxBtn.id = `form-proj-${projectName.replace(/\s+/g, '-')}`; 
 
         const optionLabel = document.createElement("label");
         optionLabel.htmlFor = checkboxBtn.id;
-        
-        // Removed the if/else logic, it just prints the exact project name now
         optionLabel.textContent = projectName;
 
-        // Append inputs to the mini-container
         optionDiv.append(checkboxBtn, optionLabel);
-        
-        // Append the mini-container to the WRAPPER (Not the fieldset directly!)
         optionsWrapper.appendChild(optionDiv);
     }
 
-    // 5. Append the fully loaded wrapper into the fieldset
     Selections.appendChild(optionsWrapper);
+
+    // --- PRE-FILL LOGIC FOR EDITING ---
+    if (taskToEdit) {
+        // Change text to reflect "Edit" mode
+        TODODialog.querySelector("legend").textContent = "Edit your task:";
+        TODODialog.querySelector("#submitbtn").textContent = "Update Task";
+
+        // Pre-fill text and dates
+        TODODialog.querySelector("#todo-title").value = taskToEdit.title;
+        TODODialog.querySelector("#dueDate").value = taskToEdit.dueDate;
+        TODODialog.querySelector("#description").value = taskToEdit.description;
+
+        // Pre-select the correct urgency (Fallback to '4' / Medium for older tasks)
+        const savedUrgency = taskToEdit.urgency || 4; 
+        const urgencyRadio = TODODialog.querySelector(`input[name="urgency"][value="${savedUrgency}"]`);
+        if (urgencyRadio) urgencyRadio.checked = true;
+
+        // Pre-check the correct project boxes
+        const checkboxes = TODODialog.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(cb => {
+            if (taskToEdit.descendent.includes(cb.value)) {
+                cb.checked = true;
+            }
+        });
+    }
 
     document.body.appendChild(TODODialog);
     TODODialog.showModal();
@@ -123,24 +137,34 @@ export function renderTODOForm() {
     TODOForm.addEventListener("submit", (e) => {
         e.preventDefault();
         
+        // Grab current values from the form
         const title = TODODialog.querySelector("#todo-title").value;
         const dueDate = TODODialog.querySelector("#dueDate").value;
         const description = TODODialog.querySelector("#description").value;
-        
-        // This continues to work perfectly since we kept input[type="checkbox"]
+        const urgency = Number(TODODialog.querySelector('input[name="urgency"]:checked').value);
         const selectedProjectsArray = Array.from(
             TODODialog.querySelectorAll('input[type="checkbox"]:checked')
         ).map(cb => cb.value);
-
-        const urgency = Number(TODODialog.querySelector('input[name="urgency"]:checked').value);
     
         const daysLeft = getDaysDifference(dueDate);
         const calculatedPriority = priorityCalculator(daysLeft, urgency);
 
-        const newTODO = new TodoMaker(title, calculatedPriority, dueDate, description, selectedProjectsArray);
+        // --- SPLIT SAVE LOGIC (UPDATE vs CREATE) ---
+        if (taskToEdit) {
+            // Update the existing object directly in AppState
+            taskToEdit.title = title;
+            taskToEdit.dueDate = dueDate;
+            taskToEdit.description = description;
+            taskToEdit.urgency = urgency;
+            taskToEdit.priority = calculatedPriority;
+            taskToEdit.descendent = [...new Set(["all", ...selectedProjectsArray])];
+        } else {
+            // Create a brand new task (passing urgency as the 6th parameter)
+            const newTODO = new TodoMaker(title, calculatedPriority, dueDate, description, selectedProjectsArray, urgency);
+            AppState.todos.push(newTODO); 
+        }
         
-        // SAVE TO STATE & RE-RENDER
-        AppState.todos.push(newTODO); 
+        // Save to LocalStorage & Refresh the UI
         AppState.saveData();          
         renderTodoList();             
         

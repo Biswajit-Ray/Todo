@@ -71,7 +71,7 @@ function todocardMaker(title, dueDate, priority, description) {
     const card = document.createElement("div");
     card.classList.add("todo-card");
 
-    // CRITICAL: We store the title here so the Delete Listener can find it!
+    
     card.dataset.title = title;
 
     const todoTitle = document.createElement("h4");
@@ -80,6 +80,7 @@ function todocardMaker(title, dueDate, priority, description) {
     
     const todoMeta = document.createElement("p");
     todoMeta.classList.add("todo-meta");
+    // Safe innerHTML usage since it's just formatting a date string
     todoMeta.innerHTML = `<strong>Due:</strong> ${dueDate}`;
 
     const todoDesc = document.createElement("p");
@@ -90,13 +91,19 @@ function todocardMaker(title, dueDate, priority, description) {
         todoDesc.textContent = 'No description provided.';
     }
 
-    // THE DELETE BUTTON
+    const editBtn = document.createElement("button");
+
+    editBtn.classList.add("edit-btn", "delete-btn"); 
+    editBtn.textContent = "Edit Task";
+    editBtn.style.marginRight = "0.5rem"; // A quick inline style so the buttons don't touch
+
+    // THE DELETE BUTTON 
     const deleteBtn = document.createElement("button");
     deleteBtn.classList.add("delete-btn");
     deleteBtn.textContent = "Delete Task";
 
-    // Append the delete button along with everything else
-    card.append(todoTitle, todoMeta, todoDesc, deleteBtn);
+    // Append ALL elements to the card
+    card.append(todoTitle, todoMeta, todoDesc, editBtn, deleteBtn);
 
     return card;
 }

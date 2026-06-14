@@ -25,7 +25,6 @@ export function initializeEventListeners() {
                     AppState.projects = AppState.projects.filter(p => p.name !== projectName);
 
                     // B. Clean up orphaned To-Dos! 
-                    // (Removes this project's tag from all tasks so they don't break)
                     AppState.todos.forEach(todo => {
                         todo.descendent = todo.descendent.filter(tag => tag !== projectName);
                     });
@@ -73,27 +72,38 @@ export function initializeEventListeners() {
         });
     }
 
-    // --- 4. Add Delete Button
+    // --- 4. To-Do Card Interactions (Edit & Delete) ---
     const todoSection = document.getElementById("todoList");
 
     if (todoSection) {
         todoSection.addEventListener("click", (e) => {
-            // 1. Check if the clicked element is a delete button
-            if (e.target.classList.contains("delete-btn")) {
+            
+            // A. THE EDIT BUTTON LOGIC
+            if (e.target.classList.contains("edit-btn")) {
+                const card = e.target.closest(".todo-card");
+                if (!card) return;
+
+                const targetTitle = card.dataset.title;
+                const taskObj = AppState.todos.find(todo => todo.title === targetTitle);
                 
-                // 2. Find the parent card to get the data-title
+                if (taskObj) {
+                    renderTODOForm(taskObj); 
+                } else {
+                    console.error("Could not find the task in AppState!");
+                }
+                
+                return; // CRITICAL: Stop here so it doesn't also delete!
+            }
+
+            // B. THE DELETE BUTTON LOGIC
+            else if (e.target.classList.contains("delete-btn")) {
                 const card = e.target.closest(".todo-card");
                 if (!card) return;
 
                 const titleToDelete = card.dataset.title;
 
-                // 3. Optional but highly recommended: Ask for confirmation
                 if (confirm(`Are you sure you want to delete "${titleToDelete}"?`)) {
-                    
-                    // 4. Filter the task out of your AppState
                     AppState.todos = AppState.todos.filter(todo => todo.title !== titleToDelete);
-
-                    // 5. Save to localStorage and update the UI
                     AppState.saveData();
                     renderTodoList(); 
                 }
@@ -101,5 +111,3 @@ export function initializeEventListeners() {
         });
     }
 }
-
-//EventListener.js
