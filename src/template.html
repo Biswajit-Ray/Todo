@@ -1,33 +1,42 @@
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Stride (Productivity Unlocked)</title>
-        <link rel="stylesheet" href="style.css"> 
-    </head>
-    <body>
-        <main>
-            <section id="motivation">
-                </section>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stride | Productivity Unlocked</title>
+</head>
+<body>
+    
+    <nav class="app-nav">
+        <div class="nav-logo">
+            <span class="logo-icon">🏃</span>
+            <span class="logo-text">Stride</span>
+        </div>
+    </nav>
 
-            <section id="todoList">
-                <h2 id="Project">
-                    Project: <span id="ProjectName">All</span>
-                </h2>
-                <button id="AddTodoBTN">Add a Task</button> 
-            </section>
+    <main class="app-layout">
 
-            <section id="projectList">
-                <h2>Project List:</h2>
-                <div class="project-card" data-name="All">
-                    <h4 class="projectName">All Tasks 🌍</h4>
-                    <p class="projectNote">View everything at once</p>
-                </div>
-                <button id="AddProjectbtn">New Project+</button>
-            </section>
-        </main>
+        <aside id="motivation">
+            </aside>
 
-        <script type="module" src="index.js"></script>
-    </body>
-    </html>
+        <section id="todoList">
+            <h2 id="Project">
+                Project: <span id="ProjectName">All Tasks 🌍</span>
+            </h2>
+            
+            <button id="AddTodoBTN" aria-label="Create a new task">Add a Task</button> 
+        </section>
+
+        <aside id="projectList">
+            <h2>Project List:</h2>
+            
+            <div class="project-card" data-name="all">
+                <h4 class="projectName">All Tasks 🌍</h4>
+                <p class="projectNote">View everything at once</p>
+            </div>
+            
+            <button id="AddProjectbtn" aria-label="Create a new project">New Project+</button>
+        </aside>
+    </main>
+</body>
+</html>

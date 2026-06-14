@@ -18,15 +18,36 @@ function projectcardMaker(name, note){
         projectNote.textContent = 'No notes attached to this project';
     }
 
-    card.append(projectName, projectNote);
+    const deleteBtn = document.createElement("button");
+    deleteBtn.classList.add("delete-project-btn", "delete-btn");
+    deleteBtn.textContent = "Delete Project";
+
+    // Append the new button along with the text
+    card.append(projectName, projectNote, deleteBtn)
+
     return card;
 }
 
 
 export function renderProjectList() {
-    const listArray = AppState.projects;
-    const AddProject = document.getElementById("AddProjectbtn");
+    // 1. Sort projects dynamically based on how many To-Dos they have!
+    const sortedProjects = [...AppState.projects].sort((a, b) => {
+        
+        // Count tasks belonging to project 'a'
+        const aCount = AppState.todos.filter(todo => 
+            todo.descendent.includes(a.name)
+        ).length;
+        
+        // Count tasks belonging to project 'b'
+        const bCount = AppState.todos.filter(todo => 
+            todo.descendent.includes(b.name)
+        ).length;
 
+        // Sort descending: highest task count goes to the top
+        return bCount - aCount; 
+    });
+
+    const AddProject = document.getElementById("AddProjectbtn");
     let cardContainer = document.querySelector(".card-container");
     
     if (!cardContainer) {
@@ -39,7 +60,8 @@ export function renderProjectList() {
 
     cardContainer.innerHTML = "";
 
-    for(let item of listArray){
+    // 2. Loop through your newly sorted array
+    for(let item of sortedProjects){
         const nodecard = projectcardMaker(item.name, item.note);
         cardContainer.appendChild(nodecard);
     }

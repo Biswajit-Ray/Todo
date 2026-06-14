@@ -7,12 +7,12 @@ export function hello() {
 
 export class TodoMaker {
     // Added a default value to parentProject so it doesn't break if left empty
-    constructor(title, priority, dueDate, description, projectArray = [], parentProject = "Ian") {
+    constructor(title, priority, dueDate, description, projectArray = [],) {
         this.title = title;
         this.priority = priority;
         this.dueDate = dueDate;
         this.description = description;
-        this.descendent = [...new Set(["all", parentProject, ...projectArray])]; 
+        this.descendent = [...new Set(["all", ...projectArray])]; 
     }
 }
 
@@ -80,7 +80,7 @@ export function renderTODOForm() {
     optionsWrapper.classList.add("project-options-container");
 
     // 3. Gather your projects (We include "all" as the default option)
-    const allOptions = ["all", ...AppState.projects.map(project => project.name)];
+    const allOptions = AppState.projects.map(project => project.name);
 
     // 4. Loop through and create the checkboxes
     for (let projectName of allOptions) {
@@ -90,15 +90,15 @@ export function renderTODOForm() {
         checkboxBtn.type = "checkbox"; 
         checkboxBtn.name = "projectAssignment";
         checkboxBtn.value = projectName;
+        
         // Generate a safe ID without spaces
         checkboxBtn.id = `form-proj-${projectName.replace(/\s+/g, '-')}`; 
-        
-        // Check "all" by default
-        if (projectName === "all") checkboxBtn.checked = true;
 
         const optionLabel = document.createElement("label");
         optionLabel.htmlFor = checkboxBtn.id;
-        optionLabel.textContent = projectName === "all" ? "All Tasks 🌍" : projectName;
+        
+        // Removed the if/else logic, it just prints the exact project name now
+        optionLabel.textContent = projectName;
 
         // Append inputs to the mini-container
         optionDiv.append(checkboxBtn, optionLabel);
